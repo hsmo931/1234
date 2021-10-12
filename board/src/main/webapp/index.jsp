@@ -15,7 +15,7 @@
 		$('.bar_menu').mouseleave(function() {
 			$('.submenu').slideUp(200);
 		});
-	})
+	}) 
 
 	$(function() {
 		$('.boardlist').click(function() {
