@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.board.service.BoardDAO">
+
+<select id="btcnt" resultType="int">
+	SELECT count(*) FROM boardtable
+</select>
+
+<!-- 페이징 처리 후 게시글 조회 -->
+<select id="paging" resultType="BoardVO">
+	SELECT * 
+		FROM (
+			SELECT ROWNUM rown, A.* 
+				FROM (
+						SELECT 
+						writenum,
+			            title,
+			            writer,
+			            content,
+			           <![CDATA[ TO_CHAR(regdate,'yyyy-mm-dd hh24:mi')as regdate]]>,
+			            viewcnt
+						FROM boardtable 
+						ORDER BY writenum DESC 
+						) A
+				)
+	WHERE rown BETWEEN #{start} AND #{end}
+</select>
+<!-- 	<select id="getAllList" resultType="BoardVO">
+		SELECT writenum,
+			   title,
+			   writer,
+			   content,
+			   <![CDATA[ TO_CHAR(regdate,'yyyy-mm-dd hh24:mi')as regdate]]>,
+			   viewcnt
+		FROM boardtable
+		ORDER BY writenum desc
+	</select> -->
+	
+	<select id="getOneDetail" resultType="BoardVO">
+	SELECT *
+	FROM boardtable
+	where writenum=#{writenum}
+	
+	</select>
+	
+	
+<insert id="insertOneWrite" parameterType="BoardVO">
+<selectKey keyProperty="writenum" order="BEFORE" resultType="int">
+SELECT writenum_seq.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO boardtable(writenum,title,writer,content,viewcnt)
+VALUES (#{writenum},#{title},#{writer},#{content},0)
+</insert>
+
+<update id="updateOne" parameterType="BoardVO">
+UPDATE boardtable SET title=#{title},content=#{content} WHERE writenum=#{writenum}
+</update>
+<update id="viewcntUp" parameterType="int">
+UPDATE boardtable 
+set viewcnt = viewcnt+1 
+where writenum=#{writenum}
+</update>
+
+
+<delete id="delete" parameterType="int">
+DELETE FROM boardtable WHERE writenum=#{writenum}
+
+
+</delete>
+
+
+
+
+</mapper>
